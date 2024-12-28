@@ -1,6 +1,7 @@
 package com.ajaz.services;
 
 import com.ajaz.dtos.PaymentInstructionResponseDto;
+import com.ajaz.exceptions.AccountNotFoundException;
 import com.ajaz.exceptions.CurrencyMismatchException;
 import com.ajaz.exceptions.InsufficientBalanceException;
 import com.ajaz.models.Account;
@@ -31,13 +32,22 @@ public class PaymentInstructionServiceImpl implements PaymentInstructionService{
     }
 
     @Override
-    public PaymentInstructionResponseDto getPaymentInstruction(String debitAccountNumber, String creditAccountNumber, Long amount) throws InsufficientBalanceException, CurrencyMismatchException {
+    public PaymentInstructionResponseDto getPaymentInstruction(String debitAccountNumber, String creditAccountNumber, Long amount) throws InsufficientBalanceException, CurrencyMismatchException, AccountNotFoundException {
 
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         RestTemplate restTemplate = restTemplateBuilder.build();
         String accountUrl = "http://localhost:8080/accounts/accountNumber/";
         ResponseEntity<Account> responseEntityDebit = restTemplate.getForEntity(accountUrl + debitAccountNumber, Account.class, debitAccountNumber);
         ResponseEntity<Account> responseEntityCredit = restTemplate.getForEntity(accountUrl + creditAccountNumber, Account.class, creditAccountNumber);
+
+        if(!responseEntityCredit.hasBody()){
+            throw new AccountNotFoundException("Debit Account not found.");
+        }
+
+        if(!responseEntityCredit.hasBody()){
+            throw new AccountNotFoundException("Credit Account not found.");
+        }
+
         Account accountDebit = responseEntityDebit.getBody();
         Account accountCredit = responseEntityCredit.getBody();
 

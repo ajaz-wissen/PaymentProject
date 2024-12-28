@@ -2,6 +2,7 @@ package com.ajaz.controllers;
 
 import com.ajaz.dtos.InstructionRequestDto;
 import com.ajaz.dtos.PaymentInstructionResponseDto;
+import com.ajaz.exceptions.AccountNotFoundException;
 import com.ajaz.exceptions.CurrencyMismatchException;
 import com.ajaz.exceptions.InsufficientBalanceException;
 import com.ajaz.models.PaymentInstruction;
@@ -27,7 +28,7 @@ public class PaymentInstructionController {
     }
 
     @GetMapping()
-    public ResponseEntity<PaymentInstructionResponseDto> getPaymentInstruction(@RequestBody InstructionRequestDto requestDto) throws CurrencyMismatchException, InsufficientBalanceException {
+    public ResponseEntity<PaymentInstructionResponseDto> getPaymentInstruction(@RequestBody InstructionRequestDto requestDto) throws CurrencyMismatchException, InsufficientBalanceException, AccountNotFoundException {
         PaymentInstructionResponseDto responseDto = paymentInstructionService.getPaymentInstruction(requestDto.getDebitAccountNumber(), requestDto.getCreditAccountNumber(), requestDto.getAmount());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
